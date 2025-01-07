@@ -6,7 +6,6 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 // Middleware for logging concise request summaries on the CLI.
-console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
