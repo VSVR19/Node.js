@@ -6,7 +6,11 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 // Middleware for logging concise request summaries on the CLI.
-app.use(morgan('dev'));
+// console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 // Middleware for working with JSON data sent as a part of a request body.
 app.use(express.json());
 // Middleware for serving static files on a browser.
