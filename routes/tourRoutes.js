@@ -6,7 +6,7 @@ const router = express.Router();
 // Use a new middleware, param.
 // This middleware will only run for certain parameters.
 // In this case, it will only run for the id parameter.
-router.param('id', tourController.checkId);
+// router.param('id', tourController.checkId);
 
 // Create a checkBody middleware.
 // This middleware will check if the body contains the name and price properties.
@@ -15,7 +15,8 @@ router.param('id', tourController.checkId);
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);
+  // .post(tourController.checkBody, tourController.createTour);
+  .post(tourController.createTour);
 
 router
   .route('/:id')
