@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
+    console.log(req.query);
     // Destructuring is one way to deep copy an object!
     // 1. Filtering
     const queryObj = { ...req.query };
@@ -19,7 +20,17 @@ exports.getAllTours = async (req, res) => {
     );
 
     // Build a query.
-    const query = await Tour.find(JSON.parse(queryString));
+    let query = Tour.find(JSON.parse(queryString));
+
+    // 3. Sorting
+    // https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15065090#questions/7704598
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
     // Execute the query.
     const allTours = await query;
 
