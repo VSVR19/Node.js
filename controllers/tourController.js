@@ -3,12 +3,23 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     // Destructuring is one way to deep copy an object!
+    // 1. Filtering
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((item) => delete queryObj[item]);
 
+    // 2. Advanced filtering
+    let queryString = JSON.stringify(queryObj);
+    // /b - match the exact only- gte|gt|lte|lt
+    // /g - perform this replace operation multiple times on a string
+    // https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15065088#questions/7574432
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
+
     // Build a query.
-    const query = await Tour.find(queryObj);
+    const query = await Tour.find(JSON.parse(queryString));
     // Execute the query.
     const allTours = await query;
 
