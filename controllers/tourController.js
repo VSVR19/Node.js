@@ -2,7 +2,16 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const allTours = await Tour.find();
+    // Destructuring is one way to deep copy an object!
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((item) => delete queryObj[item]);
+
+    // Build a query.
+    const query = await Tour.find(queryObj);
+    // Execute the query.
+    const allTours = await query;
+
     res.status(200).json({
       status: 'success',
       results: allTours.length,
@@ -79,27 +88,3 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
-
-// exports.checkId = (req, res, next, val) => {
-//   if (Number(val) > simpleTours.length)
-//     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
-
-//   // DONT FORGET TO CALL NEXT IN A MIDDELEWARE FUNCTION!
-//   next();
-// };
-
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       message: 'Missing tour name in the request body',
-//     });
-//   }
-//   if (!req.body.price) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       message: 'Missing tour price in the request body',
-//     });
-//   }
-//   next();
-// };
