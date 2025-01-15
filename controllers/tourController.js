@@ -31,6 +31,17 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('-createdAt');
     }
 
+    // 4. Limiting fields
+    // Selecting& displaying only a few fields from the API is called PROJECTION.
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      console.log(fields);
+      query = query.select(fields);
+    } else {
+      // Dont display the __v field.
+      query = query.select('-__v');
+    }
+
     // Execute the query.
     const allTours = await query;
 
