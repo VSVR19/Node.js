@@ -28,7 +28,8 @@ exports.getAllTours = async (req, res) => {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
     } else {
-      query = query.sort('-createdAt');
+      // https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15065096#questions/12610996f
+      query = query.sort('-createdAt _id');
     }
 
     // 4. Limiting fields
@@ -40,6 +41,21 @@ exports.getAllTours = async (req, res) => {
     } else {
       // Dont display the __v field.
       query = query.select('-__v');
+    }
+
+    // 5. Pagination!
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
+    const skip = (page - 1) * limit;
+    console.log(skip);
+
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      // https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15065096#questions/7581330
+      // const numberOfTours = await Tour.countDocuments();
+      const numberOfTours = await Tour.countDocuments(queryString);
+      if (skip >= numberOfTours) throw new Error('This page doesnt exist');
     }
 
     // Execute the query.
