@@ -1,5 +1,13 @@
 const Tour = require('../models/tourModel');
 
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   try {
     console.log(req.query);
@@ -36,7 +44,6 @@ exports.getAllTours = async (req, res) => {
     // Selecting& displaying only a few fields from the API is called PROJECTION.
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
-      console.log(fields);
       query = query.select(fields);
     } else {
       // Dont display the __v field.
@@ -47,7 +54,6 @@ exports.getAllTours = async (req, res) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const skip = (page - 1) * limit;
-    console.log(skip);
 
     query = query.skip(skip).limit(limit);
 
