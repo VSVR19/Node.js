@@ -99,6 +99,7 @@ exports.deleteTour = async (req, res) => {
   }
 };
 
+// 127.0.0.1:8000/api/v1/tours/tour-stats
 exports.getTourStats = async (req, res) => {
   try {
     const stats = await Tour.aggregate([
@@ -140,6 +141,7 @@ exports.getTourStats = async (req, res) => {
   }
 };
 
+// 127.0.0.1:8000/api/v1/tours/monthly-plan/2021
 exports.getMonthlyPlan = async (req, res) => {
   try {
     const year = Number(req.params.year);
