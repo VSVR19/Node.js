@@ -10,7 +10,6 @@ class APIFeatures {
     // Destructuring is one way to deep copy an object!
     // 1. Filtering
     const queryObj = { ...this.queryString };
-    console.log('Here!');
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((item) => delete queryObj[item]);
 

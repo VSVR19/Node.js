@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -55,6 +56,7 @@ const tourSchema = new mongoose.Schema(
     },
     // Array of dates
     startDates: [Date],
+    slug: String,
   },
   {
     toJSON: { virtuals: true },
@@ -69,6 +71,26 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationInWeeks').get(function () {
   return this.duration / 7;
 });
+
+// Document middleware
+// Runs only before .save() and .create() events
+// Doesnt run on any other event like insertMany()
+tourSchema.pre('save', function (next) {
+  // this- points to the currently processing MongoDB document.
+  // console.log(this);
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save document...');
+//   next();
+// });
+
+// tourSchema.post('save', function (document, next) {
+//   console.log(document);
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
