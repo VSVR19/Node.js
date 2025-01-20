@@ -8,6 +8,8 @@ router
   .route('/top-5-best')
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
+router.route('/tour-stats').get(tourController.getTourStats);
+
 // Create a checkBody middleware.
 // This middleware will check if the body contains the name and price properties.
 // If not, it will send back a 400 status code and a message.
