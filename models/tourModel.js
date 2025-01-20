@@ -57,6 +57,10 @@ const tourSchema = new mongoose.Schema(
     // Array of dates
     startDates: [Date],
     slug: String,
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -72,7 +76,7 @@ tourSchema.virtual('durationInWeeks').get(function () {
   return this.duration / 7;
 });
 
-// Document middleware
+// DOCUMENT MIDDLEWARE
 // Runs only before .save() and .create() events
 // Doesnt run on any other event like insertMany()
 tourSchema.pre('save', function (next) {
@@ -91,6 +95,29 @@ tourSchema.pre('save', function (next) {
 //   console.log(document);
 //   next();
 // });
+
+// QUERY MIDDLEWARE
+// A pre middleware for find
+// Runs only when a find query is executed
+tourSchema.pre(/^find/, function (next) {
+  // tourSchema.pre('find', function (next) {
+  // this- points to the current query/ query object
+  // We arent processing any documents here
+
+  // Select only tours whose secret is not equal to true
+  this.find({ secretTour: { $ne: true } });
+  this.queryExecutionStartTime = Date.now();
+  next();
+});
+
+// A post middleware for find
+// In a post middleware, we get access to all the documents returned by a MongoDB query.
+tourSchema.post(/^find/, function (documents, next) {
+  const queryExecutionTime = Date.now() - this.queryExecutionStartTime;
+  console.log(`The query took ${queryExecutionTime} milliseconds to execute.`);
+  // console.log(documents);
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
