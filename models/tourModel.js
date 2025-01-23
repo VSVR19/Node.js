@@ -114,8 +114,23 @@ tourSchema.pre(/^find/, function (next) {
 // In a post middleware, we get access to all the documents returned by a MongoDB query.
 tourSchema.post(/^find/, function (documents, next) {
   const queryExecutionTime = Date.now() - this.queryExecutionStartTime;
-  console.log(`The query took ${queryExecutionTime} milliseconds to execute.`);
+  // console.log(`The query took ${queryExecutionTime} milliseconds to execute.`);
   // console.log(documents);
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+// Runs before any aggregation query is executed
+tourSchema.pre('aggregate', function (next) {
+  // this- points to the current aggregation object
+  // console.log(this);
+
+  // Select only tours whose secret is not equal to true
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } },
+  });
+
+  console.log(this.pipeline());
   next();
 });
 
