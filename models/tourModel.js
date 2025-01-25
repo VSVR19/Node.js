@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -10,6 +11,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxLength: [40, 'A tour name must have less or equal than 40 characters'],
       minLength: [10, 'A tour name must have more or equal than 10 characters'],
+      // validate: [validator.isAlpha, 'Tour name must only contain alphabets'],
     },
     duration: {
       type: Number,
@@ -42,7 +44,31 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      // A normal function please.
+      // Arrow functions dont get their own 'this' keyword.
+      // A normal function provides access to the 'this' variable.
+      // Inside this validator function, 'THIS' VARIABLE POINTS TO THE CURRENT DOCUMENT only WHEN CREATING A NEW DOCUMENT.
+      // IT DOESNT WORK WHEN UPDATING A DOCUMENT!
+      // If we dont need the 'this' variable, we can use an arrow function!
+      validate: {
+        validator: function (priceDiscount) {
+          return priceDiscount < this.price;
+        },
+        // MongoDBs' version of template string!
+        message: 'Discount price ({VALUE}) should be below the regular price',
+      },
+
+      // This callback function will have access to the value being input.
+      // Am just calling it priceDiscount
+      // validate: function (priceDiscount) {
+      // if (priceDiscount >= this.price) {
+      //   throw new Error(`Discount price should not exceed the actual price`);
+      // }
+      // return priceDiscount < this.price;
+      // },
+    },
     summary: {
       type: String,
       trim: true,
@@ -86,8 +112,8 @@ tourSchema.virtual('durationInWeeks').get(function () {
 });
 
 // DOCUMENT MIDDLEWARE
-// Runs only before .save() and .create() events
-// Doesnt run on any other event like insertMany()
+// RUNS ONLY BEFORE .SAVE() AND .CREATE() EVENTS!
+// Doesnt run on any other event like insertMany() and update()
 tourSchema.pre('save', function (next) {
   // this- points to the currently processing MongoDB document.
   // console.log(this);
